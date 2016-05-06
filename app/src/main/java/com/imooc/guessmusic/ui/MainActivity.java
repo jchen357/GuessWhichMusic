@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.imooc.guessmusic.R;
 import com.imooc.guessmusic.data.Const;
@@ -65,7 +66,14 @@ public class MainActivity extends AppCompatActivity
 
     private static final String TAG = "MainActivity";
 
+    // current coin number
+    private int mCurrentCoins = Const.TOTAL_COINS;
+
+    // coin view
+    private TextView mViewCurrentCoins;
+
     /**
+
      *  ANSWER state
      */
     public final static int STATUS_ANSWER_RIGHT = 1;
@@ -90,6 +98,11 @@ public class MainActivity extends AppCompatActivity
         // 初始化文字数据
         initCurrentStageData();
 
+
+        // 处理删除按键事件
+        handleDeleteWord();
+        // 处理提示按键事件
+        handleTipWord();
     }
 
     /**
@@ -128,6 +141,9 @@ public class MainActivity extends AppCompatActivity
 
         mViewPan = (ImageView) findViewById(R.id.imageView1);
         mViewPanBar = (ImageView) findViewById(R.id.imageView2);
+
+        mViewCurrentCoins = (TextView) findViewById(R.id.txt_bar_coins);
+        mViewCurrentCoins.setText(mCurrentCoins + "");
 
         mMyGridView = (MyGridView) findViewById(R.id.gridview);
         // 注册监听
@@ -508,6 +524,150 @@ public class MainActivity extends AppCompatActivity
     private void handlePassEvent() {
         mPassView = (LinearLayout) this.findViewById(R.id.pass_view);
         mPassView.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * increase or decrease
+     * true / false
+     */
+    private boolean handleCoins(int data) {
+        // judge current coin number
+        if (mCurrentCoins + data >= 0) {
+            mCurrentCoins += data;
+            mViewCurrentCoins.setText(mCurrentCoins + "");
+            return true;
+        } else {
+            // coin not enough
+            return false;
+        }
+    }
+
+    /**
+     * read delete coins from config file
+     */
+    private int getDeleteWordCoins() {
+        return this.getResources().getInteger(R.integer.pay_delete_word);
+    }
+
+    /**
+     * read tip coins from config file
+     */
+    private int getTipCoins() {
+        return this.getResources().getInteger(R.integer.pay_tip_answer);
+    }
+
+    /**
+     * handle delete word
+     */
+    private void handleDeleteWord() {
+        ImageButton button = (ImageButton) findViewById(R.id.btn_delete);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteOneWord();
+            }
+        });
+    }
+
+    /**
+     * handle tip word
+     */
+    private void handleTipWord() {
+        ImageButton button = (ImageButton) findViewById(R.id.btn_mention);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tipAnswer();
+            }
+        });
+    }
+
+    /**
+     * 提示答案
+     */
+    private void tipAnswer() {
+        // coin
+        if (!handleCoins(-getTipCoins())) {
+            // 金币数量不够，显示对话框
+            return;
+        }
+
+        boolean tipWord = false;
+        for (int i = 0; i < mBtnSelectWords.size(); i++) {
+            MyLog.d(TAG, "mBtnSelectWords" + mBtnSelectWords.size());
+            if (mBtnSelectWords.get(i).mWordString.length() == 0) {
+                // 根据当前的答案框条件选择对应的文字并填入
+                onWordButtonClick(findIsAnswerWord(i));
+                tipWord = true;
+                break;
+            }
+        }
+        // 没有找到可以填充的答案
+        if (!tipWord) {
+            sparkWords();
+        }
+    }
+
+    /**
+     * delete words
+     */
+    private void deleteOneWord() {
+        // decrease coin
+        if (!handleCoins(-getDeleteWordCoins())) {
+            // coin not enough
+            return;
+        }
+        // delete wordbutton invisiable
+        setButtonVisiable(findNotAnswerWord(), View.INVISIBLE);
+    }
+
+    /**
+     * find a word not answer
+     */
+    private WordButton findNotAnswerWord() {
+        Random random = new Random();
+        WordButton buf = null;
+         while(true) {
+             int index = random.nextInt(MyGridView.COUNTS_WORDS);
+
+             buf = mAllWords.get(index);
+
+             if (buf.mIsVisiable && isTheAnswerWord(buf)) {
+                 return buf;
+             }
+         }
+    }
+
+    /**
+     * find a word is answer
+     * @param index 当前需要填入答案框的索引
+     */
+    private WordButton findIsAnswerWord(int index) {
+        WordButton buf = null;
+
+        for (int i = 0; i < MyGridView.COUNTS_WORDS; i++) {
+            buf = mAllWords.get(i);
+
+            if (buf.mWordString.equals("" + mCurrentSong.getNameCharacters()[index])) {
+                return buf;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * judge is answer
+     */
+    private boolean isTheAnswerWord(WordButton word) {
+        boolean result = false;
+
+        for (int i = 0; i < mCurrentSong.getNameLength(); i++) {
+            if (word.mWordString.
+                    equals(mCurrentSong.getNameCharacters()[i] + ""));
+            result = true;
+            break;
+        }
+        return result;
     }
 
 
