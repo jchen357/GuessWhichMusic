@@ -86,6 +86,13 @@ public class MainActivity extends AppCompatActivity
     // pass layout
     private View mPassView;
 
+    // current stage index
+    private TextView mCurrentStagePassView;
+
+    private TextView mCurrentStageView;
+
+    private TextView mCurrentSongNamePassView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -250,6 +257,7 @@ public class MainActivity extends AppCompatActivity
 
         return song;
     }
+
     /**
      * 当前关卡的数据
      */
@@ -261,12 +269,21 @@ public class MainActivity extends AppCompatActivity
 
         LinearLayout.LayoutParams params = new LinearLayout
                 .LayoutParams(140, 140);
+
+        // 清空原来的答案
+        mViewWordsContainer.removeAllViews();
+
+        // 增加新的答案框
         for (int i = 0; i < mBtnSelectWords.size(); i++) {
             mViewWordsContainer.addView(
                     mBtnSelectWords.get(i).mViewButton,
                     params);
         }
-
+        // 显示当前关的索引
+        mCurrentStageView = (TextView) findViewById(R.id.text_current_stage);
+        if (mCurrentStageView != null) {
+            mCurrentStageView.setText("" + (mCurrentStageIndex + 1));
+        }
         // get data
         mAllWords = initAllWord();
         // updata data - MyGridView
@@ -376,9 +393,6 @@ public class MainActivity extends AppCompatActivity
                 // record index
                 mBtnSelectWords.get(i).mIndex = wordButton.mIndex;
 
-                // Log ...
-                MyLog.d(TAG, mBtnSelectWords.get(i).mIndex + "");
-
                 // set daixuan visibility
                 setButtonVisiable(wordButton, View.INVISIBLE);
 
@@ -394,7 +408,6 @@ public class MainActivity extends AppCompatActivity
         button.mViewButton.setVisibility(visibility);
         button.mIsVisiable = (visibility == View.VISIBLE) ?
                 true : false;
-        MyLog.d(TAG, button.mIsVisiable + "");
     }
 
     /**
@@ -522,8 +535,49 @@ public class MainActivity extends AppCompatActivity
      * pass
      */
     private void handlePassEvent() {
+        // 显示过关界面
         mPassView = (LinearLayout) this.findViewById(R.id.pass_view);
         mPassView.setVisibility(View.VISIBLE);
+
+        // 停止未完成的动画
+        mViewPan.clearAnimation();
+
+        // 当前关的索引
+        mCurrentStagePassView = (TextView) findViewById(R.id.text_current_stage);
+        if (mCurrentStagePassView != null) {
+            mCurrentStagePassView.setText((mCurrentStageIndex + 1) + "");
+        }
+        //显示歌曲名称
+        mCurrentSongNamePassView = (TextView) findViewById(R.id.tv_win_songname);
+        if (mCurrentSongNamePassView != null) {
+            mCurrentSongNamePassView.setText(mCurrentSong.getSongName());
+        }
+
+        // 下一关按键处理
+        ImageButton btnPass = (ImageButton) findViewById(
+                R.id.btn_win_next_stage);
+        btnPass.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (judgeAppPassed()) {
+                    // 通关界面
+
+                } else {
+                    // 下一关
+                    mPassView.setVisibility(View.GONE);
+
+                    // 加载关卡数据
+                    initCurrentStageData();
+                }
+            }
+        });
+    }
+
+    /**
+     * 判断是否通关
+     */
+    private boolean judgeAppPassed() {
+        return (mCurrentStageIndex == Const.SONG_INFQ.length - 1);
     }
 
     /**
@@ -626,16 +680,19 @@ public class MainActivity extends AppCompatActivity
      */
     private WordButton findNotAnswerWord() {
         Random random = new Random();
+
         WordButton buf = null;
-         while(true) {
-             int index = random.nextInt(MyGridView.COUNTS_WORDS);
+        while(true) {
+            int index = random.nextInt(MyGridView.COUNTS_WORDS);
 
-             buf = mAllWords.get(index);
+            buf = mAllWords.get(index);
+            MyLog.d(TAG, "Line632 index:" + index + "   buf.mWordString  " + buf.mWordString);
 
-             if (buf.mIsVisiable && isTheAnswerWord(buf)) {
-                 return buf;
-             }
-         }
+            if (buf.mIsVisiable && !isTheAnswerWord(buf)) {
+                return buf;
+
+            }
+        }
     }
 
     /**
@@ -648,6 +705,7 @@ public class MainActivity extends AppCompatActivity
         for (int i = 0; i < MyGridView.COUNTS_WORDS; i++) {
             buf = mAllWords.get(i);
 
+            MyLog.d(TAG, "" + index);
             if (buf.mWordString.equals("" + mCurrentSong.getNameCharacters()[index])) {
                 return buf;
             }
@@ -661,11 +719,18 @@ public class MainActivity extends AppCompatActivity
     private boolean isTheAnswerWord(WordButton word) {
         boolean result = false;
 
+        MyLog.d(TAG, "Line665   :mCurrentSong   :" + mCurrentSong.getNameLength() + ";");
+
         for (int i = 0; i < mCurrentSong.getNameLength(); i++) {
             if (word.mWordString.
-                    equals(mCurrentSong.getNameCharacters()[i] + ""));
-            result = true;
-            break;
+                    equals("" + mCurrentSong.getNameCharacters()[i])) {
+
+                MyLog.d(TAG, "Line667   :" + mCurrentSong.getNameCharacters()[i] + "    i: " + i);
+                MyLog.d(TAG, "Line668   :" + word.mWordString);
+
+                result = true;
+                break;
+            }
         }
         return result;
     }

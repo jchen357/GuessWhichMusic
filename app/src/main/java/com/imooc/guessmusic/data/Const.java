@@ -9,7 +9,7 @@ public class Const {
 
     public static final int INDEX_SONG_NAME = 1;
 
-    public static final int TOTAL_COINS = 1000;
+    public static final int TOTAL_COINS = 10000;
 
     public static final String SONG_INFQ[][] = {
             {"__00000.m4a", "征服"},
