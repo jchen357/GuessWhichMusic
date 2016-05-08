@@ -93,6 +93,8 @@ public class MainActivity extends AppCompatActivity
 
     private TextView mCurrentSongNamePassView;
 
+    private TextView mCurrentAchievePassView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -542,11 +544,21 @@ public class MainActivity extends AppCompatActivity
         // 停止未完成的动画
         mViewPan.clearAnimation();
 
+        // 您已成功击败%的玩家
+        mCurrentAchievePassView = (TextView) findViewById(R.id.txt_main_achievement);
+        if (mCurrentAchievePassView != null) {
+            mCurrentAchievePassView.setText(
+                    "您已成功击败"
+                            + 100 * mCurrentStageIndex / (Const.SONG_INFQ.length - 1)
+                            + "%的玩家");
+        }
+
         // 当前关的索引
-        mCurrentStagePassView = (TextView) findViewById(R.id.text_current_stage);
+        mCurrentStagePassView = (TextView) findViewById(R.id.tv_win_stage);
         if (mCurrentStagePassView != null) {
             mCurrentStagePassView.setText((mCurrentStageIndex + 1) + "");
         }
+
         //显示歌曲名称
         mCurrentSongNamePassView = (TextView) findViewById(R.id.tv_win_songname);
         if (mCurrentSongNamePassView != null) {
@@ -561,6 +573,7 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View view) {
                 if (judgeAppPassed()) {
                     // 通关界面
+                    Util.startActivity(MainActivity.this, AppPassView.class);
 
                 } else {
                     // 下一关

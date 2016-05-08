@@ -7,6 +7,7 @@
     <include layout="@layout/top_bar"/>
 
     <LinearLayout
+        android:layout_marginTop="10dp"
         android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -24,6 +25,8 @@
     </LinearLayout>
 
     <LinearLayout
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -45,10 +48,10 @@
             android:layout_gravity="center" />
     </LinearLayout>
 
-    <LinearLayout
+    <FrameLayout
         android:orientation="vertical"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="190dp"
         android:background="@mipmap/allpass_back1"
         android:gravity="center"
         android:layout_marginLeft="10dp"
@@ -59,10 +62,13 @@
             android:layout_height="wrap_content"
             android:id="@+id/imageButton2"
             android:background="@drawable/allpass_wechat_button_icon"
-            android:layout_marginTop="5dp" />
-    </LinearLayout>
+            android:layout_marginTop="5dp"
+            android:layout_gravity="center" />
+    </FrameLayout>
 
     <LinearLayout
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
@@ -84,7 +90,7 @@
             android:layout_gravity="center" />
     </LinearLayout>
 
-    <LinearLayout
+    <FrameLayout
         android:orientation="vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -97,16 +103,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/imageView7"
-            android:background="@mipmap/allpass_text2" />
+            android:background="@mipmap/allpass_text2"
+            android:layout_marginTop="30dp"
+            android:layout_gravity="top|center" />
 
         <ImageButton
+            android:layout_marginBottom="20dp"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="75dp"
             android:id="@+id/imageButton4"
-            android:layout_marginTop="5dp"
             android:background="@drawable/allpass_contact_us_icon"
             android:layout_gravity="bottom|right" />
 
-    </LinearLayout>
+    </FrameLayout>
 
 </LinearLayout>
