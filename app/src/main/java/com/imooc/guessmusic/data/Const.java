@@ -9,9 +9,10 @@ public class Const {
 
     public static final int INDEX_SONG_NAME = 1;
 
-    public static final int TOTAL_COINS = 10000;
+    public static int TOTAL_COINS = 100;
 
     public static final String SONG_INFQ[][] = {
+
             {"__00000.m4a", "征服"},
             {"__00001.m4a", "童话"},
             {"__00002.m4a", "同桌的你"},
@@ -23,6 +24,7 @@ public class Const {
             {"__00008.m4a", "再见"},
             {"__00009.m4a", "老男孩"},
             {"__00010.m4a", "龙的传人"},
+
     };
 
 }
