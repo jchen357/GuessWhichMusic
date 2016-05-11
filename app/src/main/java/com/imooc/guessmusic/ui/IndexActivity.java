@@ -6,6 +6,8 @@ import android.view.View;
 import android.widget.ImageButton;
 
 import com.imooc.guessmusic.R;
+import com.imooc.guessmusic.data.Const;
+import com.imooc.guessmusic.model.IAlertDialogButtonListener;
 import com.imooc.guessmusic.util.Util;
 
 /**
@@ -33,6 +35,8 @@ public class IndexActivity extends Activity implements View.OnClickListener{
         mBtnAbout = (ImageButton) findViewById(R.id.btn_index_about);
 
         mBtnGuessPicture = (ImageButton) findViewById(R.id.btn_index_caitu);
+        mBtnGuessPicture.setOnClickListener(this);
+
 
         mBtnGuessMusic = (ImageButton) findViewById(R.id.btn_play_start);
         mBtnGuessMusic.setOnClickListener(this);
@@ -49,7 +53,9 @@ public class IndexActivity extends Activity implements View.OnClickListener{
                 break;
 
             case R.id.btn_index_caitu:
-
+                Util.showDialog(IndexActivity.this,
+                        "是否要从第1关重新开始游戏？",
+                        mBtnOkResetListener);
                 break;
 
             case R.id.btn_play_start:
@@ -61,4 +67,17 @@ public class IndexActivity extends Activity implements View.OnClickListener{
                 break;
         }
     }
+
+    private IAlertDialogButtonListener mBtnOkResetListener =
+        new IAlertDialogButtonListener() {
+
+            @Override
+            public void onClick() {
+                // 执行事件
+                Util.saveData(IndexActivity.this,
+                        Const.INITIAL_STAGE , Const.TOTAL_COINS);
+                Util.startActivity(IndexActivity.this, MainActivity.class);
+            }
+        };
+
 }

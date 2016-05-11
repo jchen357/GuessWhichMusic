@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity
     private Song mCurrentSong;
 
     // current stage index
-    private int mCurrentStageIndex = -1;
+    private int mCurrentStageIndex = 9;
 
     private static final String TAG = "MainActivity";
 
@@ -74,6 +74,7 @@ public class MainActivity extends AppCompatActivity
     // coin view
     private TextView mViewCurrentCoins;
 
+    private ImageButton mBtnBack;
     /**
 
      *  ANSWER state
@@ -110,6 +111,11 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // 读取数据
+        int[] datas = Util.loadData(this);
+        mCurrentStageIndex = datas[Const.INDEX_LOAD_DATA_STAGE];
+        mCurrentCoins = datas[Const.INDEX_LOAD_DATA_COINS];
+
         // 初始化动画
         initAnim();
         // 初始化控件
@@ -135,6 +141,13 @@ public class MainActivity extends AppCompatActivity
         switch (view.getId()) {
             case R.id.btn_play_start:
                 handlePlayButton();
+                break;
+            case R.id.btn_bar_back:
+                Util.startActivity(MainActivity.this, IndexActivity.class);
+                break;
+
+            default:
+                break;
         }
     }
 
@@ -162,6 +175,9 @@ public class MainActivity extends AppCompatActivity
      * 初始化控件
      */
     private void initView() {
+        mBtnBack = (ImageButton) findViewById(R.id.btn_bar_back);
+        mBtnBack.setOnClickListener(this);
+
         mCurrentCoinsView = (TextView) findViewById(R.id.txt_bar_coins);
         mCurrentCoinsView.setText(mCurrentCoins + "");
 
@@ -263,6 +279,10 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onPause() {
+        // 保存游戏数据
+        Util.saveData(MainActivity.this,
+                mCurrentStageIndex - 1, mCurrentCoins);
+
         // 清除动画
         mViewPan.clearAnimation();
 
@@ -270,6 +290,7 @@ public class MainActivity extends AppCompatActivity
         MyPlayer.stopTheSong(MainActivity.this);
         super.onPause();
     }
+
 
     /**
      *
@@ -387,7 +408,7 @@ public class MainActivity extends AppCompatActivity
         // check answer
         if (checkResult == STATUS_ANSWER_RIGHT) {
             // get reward & pass this stage
-            Const.TOTAL_COINS += 3;
+            mCurrentCoins += 3;
 
             handlePassEvent();
 
